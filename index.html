@@ -1,282 +1,237 @@
+<!doctype html>
 
-<!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Laman Login Interaktif - Versi Lengkap</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Sejarah Indonesia — E-Book Interaktif</title>
+  <meta name="description" content="E-book interaktif: sejarah Indonesia dari periode pra-Majapahit hingga masa kini. Teks lengkap, pencarian, bookmark, navigasi, tanpa hyperlink, tanpa gambar.">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@300;400;600&family=Inter:wght@300;400,600&display=swap');
+    :root{--bg:#fbfbf9;--paper:#fffdf8;--muted:#6b7280;--accent:#2b6cb0;--accent-2:#ef6c00;--text:#0b1220}
+    [data-theme='dark']{--bg:#071124;--paper:#061424;--muted:#9aa6bd;--accent:#7dd3fc;--accent-2:#fb923c;--text:#e6eef8}
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,Arial}
+    .app{display:flex;gap:18px;padding:22px;min-height:100vh}
+    .sidebar{width:360px;background:linear-gradient(180deg,var(--paper),#f7f5ef);border-radius:12px;padding:18px;box-shadow:0 8px 30px rgba(2,6,23,0.06);overflow:auto}
+    .reader{flex:1;display:flex;flex-direction:column;gap:14px}
+    h1{font-family:Source Serif 4, serif;margin:0 0 6px 0;font-size:22px}
+    h2{font-family:Source Serif 4, serif;margin:0;font-size:18px}
+    .muted{color:var(--muted);font-size:13px}
+    .toc-search{display:flex;gap:8px;align-items:center}
+    .toc-search input[type=text]{flex:1;padding:10px;border-radius:10px;border:1px solid rgba(0,0,0,0.06);background:transparent}
+    .toc-controls{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+    .btn{background:transparent;border:1px solid rgba(0,0,0,0.08);padding:8px 10px;border-radius:8px;cursor:pointer}
+    .btn.primary{background:var(--accent);color:white;border:0}
+    .toc-list{margin-top:12px;display:flex;flex-direction:column;gap:6px}
+    .toc-item{padding:10px;border-radius:8px;cursor:pointer;background:transparent;border:1px solid transparent}
+    .toc-item:hover{background:rgba(0,0,0,0.02)}
+    .toc-item.active{outline:2px solid var(--accent-2);background:linear-gradient(90deg,rgba(43,108,176,0.06),transparent)}
+    .tag{display:inline-block;padding:4px 8px;border-radius:999px;background:rgba(0,0,0,0.03);font-size:12px;margin-right:6px}
+    .page{background:var(--paper);border-radius:14px;padding:36px;box-shadow:0 10px 40px rgba(2,6,23,0.06);max-width:900px;margin:0 auto}
+    .page .meta{font-size:13px;color:var(--muted);margin-bottom:14px}
+    .page .content{font-family:Source Serif 4, serif;line-height:1.68;font-size:18px;color:var(--text)}
+    .controls-bar{display:flex;justify-content:space-between;align-items:center;gap:12px}
+    .controls-left{display:flex;gap:8px;align-items:center}
+    .controls-right{display:flex;gap:8px;align-items:center}
+    .small{font-size:13px;color:var(--muted)}
+    .footer{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-top:8px}
+    .progress{height:6px;background:rgba(0,0,0,0.06);border-radius:999px;overflow:hidden;flex:1}
+    .progress > i{display:block;height:100%;background:var(--accent);width:0%}
+    @media (max-width:980px){.app{flex-direction:column;padding:12px}.sidebar{width:100%;order:2}.reader{order:1}}
+    @media print{body{background:white} .controls-bar,.sidebar,.btn{display:none} .page{box-shadow:none;margin:0;padding:0}}
+  </style>
+</head>
+<body data-theme="light">
+  <div class="app">
+    <aside class="sidebar" role="navigation">
+      <h1>Sejarah Indonesia (E-Book)</h1>
+      <div class="muted">Kisisnopsis peristiwa penting: dari periode pra-Majapahit hingga masa kini. Tanpa gambar, tanpa hyperlink — hanya teks dan sumber (nama saja).</div><div style="margin-top:12px" class="toc-search">
+    <input id="searchBox" type="text" placeholder="Cari judul, tanggal, atau kata kunci...">
+    <button id="btnSearch" class="btn">Cari</button>
+  </div>
 
-    <style>
-        /* Reset & Pengaturan Dasar */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <div class="toc-controls">
+    <button id="btnAll" type="button" class="btn">Semua</button>
+    <button id="btnBookmarks" type="button" class="btn">Bookmark</button>
+    <button id="themeToggle" type="button" class="btn">Night</button>
+    <button id="fontIncrease" type="button" class="btn">A+</button>
+    <button id="fontDecrease" type="button" class="btn">A-</button>
+  </div>
 
-        body {
-            font-family: 'Poppins', sans-serif;
-            height: 100vh;
-            overflow: hidden; /* Mencegah scroll */
-        }
+  <div class="toc-list" id="tocList" aria-label="Table of contents" style="margin-top:10px"></div>
 
-        /* Latar Belakang Gradasi */
-        .background-container {
-            height: 100%;
-            width: 100%;
-            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
+  <div style="margin-top:12px" class="small muted">Export:</div>
+  <div style="display:flex;gap:8px;margin-top:8px">
+    <button id="exportJSON" type="button" class="btn">Export JSON</button>
+    <button id="exportPDF" type="button" class="btn">Export PDF</button>
+  </div>
 
-        /* Kontainer Login dengan Efek Kaca */
-        .login-container {
-            width: 400px;
-            padding: 40px;
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-            color: #e0e0e0;
-            text-align: center;
-        }
+  <div style="margin-top:18px" class="small muted">Sumber (nama saja): encyclopedia, penelitian sejarah, arsip nasional, Wikipedia.</div>
+</aside>
 
-        h1 {
-            font-weight: 600;
-            font-size: 2.5em;
-            margin-bottom: 10px;
-            color: #ffffff;
-        }
-
-        .subtitle {
-            font-weight: 300;
-            margin-bottom: 30px;
-            color: #a0a0a0;
-        }
-
-        /* Grup Input dengan Ikon */
-        .input-group {
-            position: relative;
-            margin-bottom: 5px; /* Dikecilkan untuk pesan error */
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 10px;
-            border: 1px solid transparent;
-            transition: border 0.3s ease;
-            display: flex;
-            align-items: center;
-        }
-
-        .input-group:focus-within {
-            border: 1px solid #00c6ff; /* Warna aksen saat aktif */
-        }
-
-        .input-group i {
-            padding: 15px;
-            color: #a0a0a0;
-        }
-
-        .input-group input {
-            width: 100%;
-            padding: 15px 15px 15px 0;
-            background: none;
-            border: none;
-            outline: none;
-            color: #e0e0e0;
-            font-size: 1em;
-            font-family: 'Poppins', sans-serif;
-        }
-
-        .input-group input::placeholder {
-            color: #777;
-        }
-
-        /* Pesan Error */
-        .error-message {
-            text-align: left;
-            color: #ff6b6b;
-            font-size: 0.8em;
-            height: 18px; /* Beri ruang agar layout tidak bergeser */
-            padding-left: 10px;
-            margin-bottom: 10px;
-            visibility: hidden; /* Sembunyikan tapi tetap ambil ruang */
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .error-message.visible {
-            visibility: visible;
-            opacity: 1;
-        }
-
-        /* Opsi Tambahan */
-        .options {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 15px;
-            margin-bottom: 25px;
-            font-size: 0.9em;
-        }
-
-        .options label {
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-            color: #a0a0a0;
-        }
-
-        .options input[type="checkbox"] {
-            margin-right: 8px;
-        }
-
-        .options a {
-            color: #00c6ff; /* Warna aksen */
-            text-decoration: none;
-            transition: text-decoration 0.3s;
-        }
-
-        .options a:hover {
-            text-decoration: underline;
-        }
-
-        /* Tombol Login */
-        button {
-            width: 100%;
-            padding: 15px;
-            border: none;
-            border-radius: 10px;
-            background: linear-gradient(90deg, #00c6ff, #0072ff);
-            color: #ffffff;
-            font-size: 1.2em;
-            font-weight: 600;
-            font-family: 'Poppins', sans-serif;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 198, 255, 0.2);
-        }
-
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 198, 255, 0.4);
-        }
-
-        button:active {
-            transform: translateY(0);
-            box-shadow: 0 4px 15px rgba(0, 198, 255, 0.2);
-        }
-    </style>
-    </head>
-<body>
-
-    <div class="background-container">
-        <div class="login-container">
-            <form id="loginForm" novalidate>
-                <h1>Selamat Datang</h1>
-                <p class="subtitle">Silakan masuk untuk melanjutkan</p>
-
-                <div class="input-group">
-                    <i class="fa-solid fa-user"></i>
-                    <input type="text" id="username" name="username" placeholder="Nama Pengguna" required>
-                </div>
-                <p class="error-message" id="username-error"></p>
-
-                <div class="input-group">
-                    <i class="fa-solid fa-lock"></i>
-                    <input type="password" id="password" name="password" placeholder="Kata Sandi" required>
-                </div>
-                <p class="error-message" id="password-error"></p>
-
-                <div class="options">
-                    <label>
-                        <input type="checkbox" name="remember"> Ingat Saya
-                    </label>
-                    <a href="#">Lupa Kata Sandi?</a>
-                </div>
-
-                <button type="submit" id="loginButton">Masuk</button>
-            </form>
-        </div>
+<main class="reader">
+  <div class="controls-bar">
+    <div class="controls-left">
+      <button id="prevBtn" type="button" class="btn">◀</button>
+      <button id="nextBtn" type="button" class="btn">▶</button>
+      <div class="small muted" id="positionLabel">0 / 0</div>
     </div>
-    <script>
-        // Menunggu seluruh konten HTML dimuat sebelum menjalankan script
-        document.addEventListener('DOMContentLoaded', function() {
-            
-            // Mengambil elemen-elemen yang dibutuhkan dari DOM
-            const loginForm = document.getElementById('loginForm');
-            const usernameInput = document.getElementById('username');
-            const passwordInput = document.getElementById('password');
-            const usernameError = document.getElementById('username-error');
-            const passwordError = document.getElementById('password-error');
-            const loginButton = document.getElementById('loginButton');
+    <div class="controls-right">
+      <div class="small muted">Mode baca</div>
+      <button id="readingMode" type="button" class="btn">E-Book</button>
+    </div>
+  </div>
 
-            // Fungsi untuk menampilkan pesan error
-            function showError(errorElement, message) {
-                errorElement.textContent = message;
-                errorElement.classList.add('visible');
-            }
+  <article class="page" id="page">
+    <div class="meta" id="pageMeta">Pilih entri di daftar kiri untuk mulai membaca.</div>
+    <div class="content" id="pageContent"></div>
+    <div class="small muted" id="pageSources"></div>
+  </article>
 
-            // Fungsi untuk menyembunyikan pesan error
-            function hideError(errorElement) {
-                errorElement.textContent = '';
-                errorElement.classList.remove('visible');
-            }
+  <div class="footer">
+    <div class="small muted">Bookmark: <span id="bookmarkCount">0</span></div>
+    <div class="progress" aria-hidden="true"><i id="progressBar"></i></div>
+    <div class="small muted">Tema: <span id="themeLabel">Light</span></div>
+  </div>
+</main>
 
-            // Menambahkan event listener pada form saat disubmit
-            loginForm.addEventListener('submit', function(event) {
-                // Mencegah form mengirim data secara default (mencegah reload halaman)
-                event.preventDefault();
+  </div>  <script>
+  // =================================================================
+  // E-Book: Sejarah Indonesia (tanpa gambar, tanpa hyperlink)
+  // Isi: daftar entri sejarah Indonesia dari pra-Majapahit hingga masa kini.
+  // Setiap entri: id, date, title, summary, description, tags, sources (nama saja)
+  // =================================================================
 
-                // Flag untuk melacak validasi
-                let isValid = true;
+  const events = [
+    {id:'i001', date:'-2000', title:'Migrasi Austronesia ke Kepulauan Nusantara (perkiraan)', summary:'Gelombang migrasi pelaut Austronesia membawa bahasa dan pertanian ke wilayah Nusantara.', description:'Sekitar ribuan tahun SM, gelombang pemukim Austronesia bermigrasi dari Taiwan dan Filipina ke kepulauan Indonesia, memperkenalkan pertanian bercocok tanam, perahu bercadik, dan bahasa rumpun Austronesia yang menjadi dasar bahasa-bahasa di Nusantara.', tags:['Prasejarah','Migrasi'], sources:['Arkeologi Indonesia','Sejarah Penelitan Linguistik']},
+    {id:'i002', date:'-1', title:'Perkembangan budaya megalitik di Nusantara', summary:'Pembuatan dolmen, menhir, dan struktur megalitik di beberapa pulau.', description:'Banyak situs megalitik ditemukan di Sulawesi, Nusa Tenggara, dan pulau-pulau lainnya; praktik pemakaman dan struktur sosial berkembang di masyarakat pra-sejarah Nusantara.', tags:['Prasejarah','Budaya'], sources:['Arkeologi Indonesia','Jurnal Arkeologi']},
+    {id:'i003', date:'150', title:'Kerajaan Tarumanagara (awal abad ke-2 M)', summary:'Salah satu kerajaan tertua di Jawa Barat menurut prasasti beraksara Pallawa.', description:'Prasasti-prasasti yang ditemukan di Tugu dan Ciaruteun menunjukkan keberadaan kerajaan Tarumanagara yang memiliki hubungan perdagangan dan kebudayaan Hindu-Buddha pada pantai barat Jawa.', tags:['Kerajaan','Jawa'], sources:['Prasasti Tarumanagara','Sejarah Indonesia']},
+    {id:'i004', date:'650', title:'Kerajaan Sriwijaya (sekitar abad ke-7–13)', summary:'Kerajaan maritim berpengaruh di Sumatra bagian selatan yang menguasai jalur pelayaran Selat Malaka.', description:'Sriwijaya adalah pusat perdagangan dan penyebaran agama Buddha Mahayana di Asia Tenggara. Pengaruhnya meliputi Sumatra, Semenanjung Melayu, dan sebagian pulau Jawa; bukti arkeologis dan prasasti menunjukkan jaringan pelayaran yang luas.', tags:['Kerajaan','Sumatra'], sources:['Sejarah Sriwijaya','Arkeologi Nusantara']},
+    {id:'i005', date:'700', title:'Kerajaan Mataram Kuno (Medang) — Jawa Tengah', summary:'Dinasti Mataram (Sanajaya & Syailendra) membangun candi-candi besar seperti Borobudur dan Prambanan.', description:'Periode ini melihat berkembangnya kerajaan Hindu-Buddha di Jawa Tengah. Dinasti Syailendra dikenal karena pembangunan Borobudur, sedangkan dinasti Sanjaya membangun candi-candi Hindu di sekitar Prambanan.', tags:['Kerajaan','Jawa Tengah'], sources:['Babad dan Prasasti','Sejarah Candi Borobudur']},
+    {id:'i006', date:'800', title:'Perdagangan maritim dan pembentukan pusat-pusat pelabuhan', summary:'Pelabuhan-pelabuhan di Nusantara menjadi titik penting perdagangan rempah dan barang antar Asia.', description:'Pelabuhan seperti Barus, Banda, dan lain-lain menjadi pusat transit rempah-rempah; pedagang dari India, Tiongkok, dan Arab mulai tiba secara reguler, membentuk jaringan dagang internasional.', tags:['Perdagangan','Maritim'], sources:['Sejarah Perdagangan Nusantara','Penelitian Maritim']},
+    {id:'i007', date:'900', title:'Kerajaan Kediri & Kahuripan (Jawa Timur)', summary:'Muncul kerajaan bercorak Hindu di Jawa Timur setelah periode Mataram.', description:'Setelah pergeseran pusat kekuasaan ke timur pulau Jawa, kerajaan-kerajaan baru seperti Kediri dan Kahuripan berkembang dengan kegiatan sastra, politik dan perdagangan intra-asia.', tags:['Kerajaan','Jawa Timur'], sources:['Sejarah Jawa','Sastra Kuno Jawa']},
+    {id:'i008', date:'1222', title:'Berdirinya Kerajaan Singhasari (1222)', summary:'Raja Kertanegara dan pendirian kerajaan Singhasari yang kuat di Jawa Timur.', description:'Singhasari naik menjadi kekuatan regional, melakukan ekspedisi Nusantara, dan memusatkan kekuasaan di Jawa Timur; Kertanegara menjadi tokoh penting sampai runtuhnya Singhasari oleh pemberontakan dan serangan Mongol kemudian.', tags:['Kerajaan','Jawa Timur'], sources:['Nagarakretagama','Sejarah Kerajaan Singhasari']},
+    {id:'i009', date:'1293-06-04', title:'Berdirinya Majapahit (1293 — puncak abad ke-14)', summary:'Raden Wijaya mendirikan Majapahit setelah mengalahkan pasukan Mongol.', description:'Majapahit menjadi kerajaan besar di Jawa yang mencapai puncak kejayaan pada masa pemerintahan Hayam Wuruk dan mahapatih Gajah Mada; periode ini sering disebut masa keemasan budaya dan politik Nusantara.', tags:['Majapahit','Kerajaan'], sources:['Nagarakretagama','Sejarah Majapahit']},
+    {id:'i010', date:'1334', title:'Sumpah Palapa oleh Gajah Mada (perkiraan)', summary:'Gajah Mada mengucap sumpah untuk menyatukan Nusantara di bawah Majapahit.', description:'Sumpah Palapa tercatat dalam teks Nagarakretagama dan menjadi simbol ambisi politik Gajah Mada untuk menyatukan wilayah Nusantara melalui kekuasaan Majapahit.', tags:['Majapahit','Politik'], sources:['Nagarakretagama','Sejarawan Nusantara']},
+    {id:'i011', date:'1365', title:'Masa Keemasan Majapahit (Hayam Wuruk era)', summary:'Hayam Wuruk dan Gajah Mada memimpin puncak ekspansi Majapahit.', description:'Era ini ditandai oleh stabilitas politik di Jawa, penguatan perdagangan, serta perkembangan seni dan sastra Jawa klasik.', tags:['Majapahit','Budaya'], sources:['Nagarakretagama','Sejarah Majapahit']},
+    {id:'i012', date:'1400', title:'Peralihan & pengaruh Islam di pesisir Nusantara', summary:'Masuknya Islam melalui perdagangan di pesisir timur Sumatra, Jawa, dan pesisir selatan.', description:'Seiring intensifikasi hubungan dagang dengan pedagang Muslim dari Gujarat dan Arabia, kerajaan-kerajaan pesisir secara bertahap mengadopsi Islam dan membentuk kesultanan seperti Samudera Pasai, Demak, dan Aceh.', tags:['Agama','Perdagangan'], sources:['Sejarah Islam di Nusantara','Penelitian Sejarah']},
+    {id:'i013', date:'1407', title:'Kemunculan Kesultanan Samudera Pasai (abad ke-13–15)', summary:'Pusat perdagangan dan Islam di pantai utara Sumatra.', description:'Samudera Pasai menjadi pusat keagamaan Islam awal di Nusantara dan titik penting jaringan perdagangan Selat Malaka.', tags:['Sumatra','Agama'], sources:['Sejarah Samudera Pasai','Penelitian Sejarah Islam']},
+    {id:'i014', date:'1478', title:'Perkembangan Kesultanan Demak (abad ke-15–16)', summary:'Demak sebagai kesultanan Islam pertama yang kuat di Jawa.', description:'Demak muncul sebagai kekuatan pesisir di Jawa utara, menjadi pusat penyebaran Islam di pulau Jawa dan sebagai pengganti beberapa struktur politik Hindu-Buddha sebelumnya.', tags:['Jawa','Islam'], sources:['Sejarah Demak','Sumber Lokal']},
+    {id:'i015', date:'1511', title:'Penaklukan Malaka oleh Portugis', summary:'Portugis merebut Malaka, mengubah peta perdagangan di wilayah Melayu.', description:'Kehadiran Portugis mengubah rute dan praktik perdagangan rempah, memicu kehadiran kekuatan Eropa lain seperti Belanda dan Inggris di kemudian hari.', tags:['Penjajahan','Perdagangan'], sources:['Sejarah Maritim','Sejarah Kolonial']},
+    {id:'i016', date:'1527', title:'Pendirian Kesultanan Demak Bintara / Bedah?', summary:'(Perkembangan kekuasaan Demak hingga runtuhnya kerajaan Hindu-Jawa klasik).', description:'Demak memperkuat pengaruh Islam dan menggantikan beberapa pusat kekuasaan lama; periode ini juga awal interaksi intens dengan kekuatan Eropa di laut Jawa.', tags:['Jawa','Transformasi'], sources:['Sejarah Demak','Naskah Kuno']},
+    {id:'i017', date:'1567', title:'Pendirian Kesultanan Gowa-Tallo (Makassar)', summary:'Gowa-Tallo menjadi pusat politik dan pelayaran di kawasan timur Indonesia.', description:'Kekuatan Gowa menguasai jalur perdagangan timur Indonesia dan berinteraksi dengan Portugis, Spanyol, dan pedagang Asia lainnya.', tags:['Sulawesi','Kerajaan'], sources:['Sejarah Gowa','Arsip Lokal']},
+    {id:'i018', date:'1596', title:'Kedatangan Belanda — VOC dan masuknya pengaruh baru', summary:'Pedagang Belanda mulai aktif di Nusantara; akhirnya membentuk VOC (1602).', description:'Perusahaan Hindia Belanda (VOC) menjadi kekuatan ekonomi dan politik utama di Nusantara, mendirikan benteng, monopoli rempah, dan mengatur wilayah-wilayah perdagangan.', tags:['VOC','Kolonial'], sources:['Sejarah VOC','Penelitian Kolonial']},
+    {id:'i019', date:'1602', title:'Pendirian Vereenigde Oostindische Compagnie (VOC)', summary:'VOC dibentuk sebagai perusahaan dagang Belanda yang berotoritas di Asia.', description:'VOC berperan besar dalam pembentukan struktur kolonial Belanda di Nusantara, mengendalikan perdagangan rempah dan mendirikan kantor-kantor dagang (gubernemen lokal).', tags:['VOC','Ekonomi'], sources:['Sejarah VOC','Dokumen Arsip']},
+    {id:'i020', date:'1619', title:'Pembentukan Batavia (Jakarta) oleh Jan Pieterszoon Coen', summary:'Batavia menjadi pusat administrasi VOC di Nusantara (1619).', description:'Batavia didirikan VOC sebagai pusat kegiatan dagang dan administrasi yang kemudian berkembang menjadi kota kolonial utama di pulau Jawa.', tags:['Batavia','Kolonial'], sources:['Sejarah Jakarta','Arsip VOC']},
+    {id:'i021', date:'1641', title:'Penguasaan VOC atas Maluku & Banda', summary:'VOC menguasai pusat rempah-rempah seperti Banda dan Maluku.', description:'VOC melakukan berbagai tindakan untuk mengamankan monopoli rempah, termasuk konflik berskala lokal dan kontrol atas produksi pala dan cengkeh.', tags:['Maluku','Rempah'], sources:['Sejarah Rempah','Dokumen VOC']},
+    {id:'i022', date:'1740', title:'Peristiwa Geger Pacinan (Batavia 1740)', summary:'Kekerasan etnis terhadap komunitas Tionghoa di Batavia yang memicu bentrokan dan kebijakan kebencian rasial kolonial.', description:'Tragedi ini mencerminkan ketegangan sosial-ekonomi di kota kolonial Batavia dan menimbulkan kebijakan represif oleh VOC.', tags:['Batavia','Sosial'], sources:['Studi Sosial Batavia','Arsip Kolonial']},
+    {id:'i023', date:'1780', title:'Masa kebangkitan lokal & perlawanan terhadap VOC', summary:'Perlawanan lokal meningkat terhadap dominasi VOC di berbagai daerah.', description:'Berbagai pemberontakan dan konflik lokal menandai penentangan terhadap monopoli dan kebijakan VOC menjelang era kolonial modern.', tags:['Perlawanan','Kolonial'], sources:['Sejarah Perlawanan Lokal','Penelitian Regional']},
+    {id:'i024', date:'1799', title:'Kebangkrutan VOC & transisi ke pemerintahan Hindia Belanda Negara', summary:'VOC dibubarkan (1799); wilayahnya diambil alih oleh negara Belanda.', description:'Setelah kebangkrutan VOC, administrator negara Belanda mengambil alih kontrol lebih langsung atas wilayah Hindia Belanda, yang mengubah struktur pemerintahan kolonial.', tags:['Kolonial','Administrasi'], sources:['Sejarah Kolonial','Dokumen Resmi']},
+    {id:'i025', date:'1811', title:'Pendudukan Inggris singkat (1811–1816) di bawah Thomas Stamford Raffles', summary:'Inggris menaklukkan sementara Batavia selama perang Napoleonic.', description:'Periode singkat kekuasaan Inggris mengantarkan reformasi administrasi dan catatan sejarah serta pengenalan kebijakan agraria; setelah Kongres Wina, wilayah dikembalikan ke Belanda.', tags:['Kolonial','Britania'], sources:['Sejarah Raffles','Arsip Kolonial']},
+    {id:'i026', date:'1825-1830', title:'Perang Diponegoro (Perang Jawa)', summary:'Perang besar melawan kolonial Belanda dipimpin Pangeran Diponegoro.', description:'Konflik ini merupakan salah satu perlawanan berskala besar terhadap Belanda; pertempuran terjadi di wilayah Jawa Tengah dan berdampak besar pada masyarakat lokal.', tags:['Perlawanan','Jawa'], sources:['Sejarah Diponegoro','Babad Lokal']},
+    {id:'i027', date:'1830', title:'Sistem Tanam Paksa (Cultuurstelsel) diperkenalkan (1830-an)', summary:'Belanda menerapkan sistem tanam paksa yang memaksa petani menanam komoditas ekspor.', description:'Cultuurstelsel menyebabkan keuntungan besar bagi Belanda sekaligus penderitaan dan kelaparan bagi masyarakat pribumi; sistem ini menimbulkan perdebatan etis dan politik di Belanda.', tags:['Ekonomi','Kolonial'], sources:['Sejarah Ekonomi Kolonial','Studi Sosial']},
+    {id:'i028', date:'1870', title:'Perkembangan pergerakan politik awal & modernisasi', summary:'Munculnya kaum terpelajar dan birokrasi lokal membuka ruang ide-ide baru.', description:'Periode akhir abad ke-19 melihat kemunculan intelektual-pribumi, pers, dan organisasi modern yang kelak menjadi cikal bakal gerakan nasionalis.', tags:['Nasionalisme','Sosial'], sources:['Sejarah Pergerakan Nasional','Penelitian Politik']},
+    {id:'i029', date:'1908-07-20', title:'Budi Utomo didirikan (20 Juli 1908)', summary:'Organisasi modern pertama kaum terpelajar di Indonesia yang menandai awal pergerakan nasional.', description:'Budi Utomo menjadi inspirasi bagi organisasi-organisasi berikutnya; 20 Juli kemudian diperingati sebagai hari kebangkitan nasional.', tags:['Nasionalisme','Organisasi'], sources:['Sejarah Budi Utomo','Dokumen Nasional']},
+    {id:'i030', date:'1912', title:'Sarekat Islam berdiri', summary:'Organisasi massa Islam yang menjadi basis politik dan sosial bagi banyak kaum pribumi.', description:'Sarekat Islam membantu menyebarkan kesadaran politik dan ekonomi di kalangan pedagang kecil dan masyarakat luas.', tags:['Nasionalisme','Agama'], sources:['Sejarah Sarekat Islam','Penelitian Sosial']},
+    {id:'i031', date:'1927', title:'PII dan Partai Nasional Indonesia (PNI) terbit/berkembang', summary:'Organisasi politik modern yang menuntut peningkatan kedaulatan dan pemerintahan sendiri.', description:'PNI yang dibentuk oleh Sukarno dan rekan-rekan menjadi salah satu organisasi politik utama pada periode antara; aktivitas politik meningkat menjelang kemerdekaan.', tags:['Nasionalisme','Politik'], sources:['Sejarah PNI','Buku Politik Indonesia']},
+    {id:'i032', date:'1928-10-28', title:'Sumpah Pemuda (28 Oktober 1928)', summary:'Pemuda Indonesia menyatakan satu bahasa, satu tanah air, dan satu bangsa: Indonesia.', description:'Sumpah Pemuda menjadi momen sentral dalam pembentukan identitas nasional modern yang melekat pada perjuangan kemerdekaan.', tags:['Nasionalisme','Budaya'], sources:['Dokumen Sumpah Pemuda','Sejarah Kebangkitan Nasional']},
+    {id:'i033', date:'1942-03', title:'Pendudukan Jepang dimulai (1942–1945)', summary:'Jepang menginvasi dan menduduki Nusantara selama Perang Dunia II.', description:'Pendudukan Jepang mengakhiri administrasi Belanda sekilas dan mengubah dinamika politik; peristiwa ini juga membuka ruang bagi elite nasionalis untuk berkumpul dan mempersiapkan kemerdekaan.', tags:['Perang','Pendudukan'], sources:['Sejarah Perang Dunia II di Asia Tenggara','Dokumen Sejarah']},
+    {id:'i034', date:'1945-08-17', title:'Proklamasi Kemerdekaan Republik Indonesia (17 Agustus 1945)', summary:'Soekarno dan Hatta memproklamasikan kemerdekaan Indonesia.', description:'Proklamasi menjadi dasar pembentukan negara Indonesia modern; memicu perjuangan diplomasi dan militer melawan upaya Belanda untuk kembali menguasai wilayah.', tags:['Kemerdekaan','Politik'], sources:['Proklamasi Kemerdekaan','Dokumen Nasional']},
+    {id:'i035', date:'1945-1949', title:'Periode Revolusi Nasional (Agresi Militer & Diplomasi)', summary:'Konflik bersenjata dan diplomasi antara Republik Indonesia dan Belanda.', description:'Setelah proklamasi, terjadi perjuangan bersenjata di berbagai daerah serta negosiasi internasional yang akhirnya mengarah pada pengakuan kedaulatan.', tags:['Kemerdekaan','Perang'], sources:['Sejarah Revolusi Indonesia','Arsip Diplomatik']},
+    {id:'i036', date:'1949-12-27', title:'Pengakuan Kedaulatan Indonesia oleh Belanda (27 Des 1949)', summary:'Belanda mengakui kedaulatan Republik Indonesia (transfer kedaulatan).', description:'Momen penting formal pengakuan kedaulatan, walaupun dinamika politik internal dan bentuk negara sempat berubah (RIS ke NKRI).', tags:['Diplomasi','Kemerdekaan'], sources:['Dokumen Pengakuan Kedaulatan','Sejarah Diplomasi']},
+    {id:'i037', date:'1950', title:'Pembentukan Negara Kesatuan Republik Indonesia (NKRI) — 1950', summary:'Transisi dari Republik Federal ke Negara Kesatuan Indonesia.', description:'Setelah periode transisi, struktur negara disusun ulang menjadi bentuk negara kesatuan dengan ibukota di Jakarta.', tags:['Politik','Negara'], sources:['Sejarah NKRI','Dokumen Peralihan']},
+    {id:'i038', date:'1955', title:'Konferensi Asia-Afrika (Bandung, 1955)', summary:'Konferensi penting yang mempertemukan pemimpin negara-negara Asia dan Afrika.', description:'Konferensi Bandung menjadi tonggak solidaritas Selatan global dan mempengaruhi politik non-blok serta hubungan internasional pasca-kolonial.', tags:['Internasional','Politik'], sources:['Sejarah Konferensi Bandung','Dokumen Konferensi']},
+    {id:'i039', date:'1959', title:'Dekrit Presiden 5 Juli 1959 — kembali ke UUD 1945', summary:'Sukarno mengeluarkan dekrit yang mengembalikan UUD 1945 sebagai konstitusi.', description:'Keputusan ini mengubah landasan konstitusional Indonesia dan menandai era Demokrasi Terpimpin pada masa pemerintahan Soekarno.', tags:['Politik','Konstitusi'], sources:['Dokumen Resmi','Sejarah Konstitusi']},
+    {id:'i040', date:'1965-09-30', title:'Peristiwa 30 September 1965 (Gerakan 30 September)', summary:'Peristiwa yang menimbulkan perubahan politik besar di Indonesia.', description:'Kejadian ini diikuti oleh penumpasan PKI dan perubahan besar dalam lanskap politik, yang berujung pada berakhirnya era Soekarno dan naiknya Soeharto.', tags:['Politik','Krisis'], sources:['Studi Sejarah Modern','Arsip Nasional']},
+    {id:'i041', date:'1967', title:'Kenaikan Soeharto & Orde Baru (1967–1998)', summary:'Soeharto mengambil alih kekuasaan dan memimpin era Orde Baru panjang.', description:'Periode Orde Baru ditandai oleh stabilitas politik otoriter, pembangunan ekonomi melalui industrialisasi, namun juga represi politik dan pembatasan kebebasan sipil.', tags:['Orde Baru','Politik'], sources:['Sejarah Orde Baru','Analisis Politik']},
+    {id:'i042', date:'1975', title:'Pemberontakan & Konflik di Timor Timur (1975–1999)', summary:'Invasi & aneksasi Timor Timur oleh Indonesia (1975) dan konflik berkepanjangan.', description:'Peristiwa ini memunculkan kontroversi internasional dan berakhir dengan referendum kemerdekaan Timor Leste pada 1999.', tags:['Timor Timur','Konflik'], sources:['Sejarah Timor Timur','Laporan Internasional']},
+    {id:'i043', date:'1997-1998', title:'Krisis Moneter Asia & Reformasi 1998', summary:'Krisis ekonomi memicu demonstrasi dan kejatuhan Soeharto (1998).', description:'Tekanan ekonomi dan politik menyebabkan gerakan reformasi, pengunduran diri Soeharto, dan transisi menuju demokratisasi dan desentralisasi (Reformasi).', tags:['Ekonomi','Reformasi'], sources:['Analisis Krisis 1997','Sejarah Reformasi']},
+    {id:'i044', date:'1999', title:'Pemilihan umum pertama pasca-Orde Baru & timor referendum (1999)', summary:'Pemilu demokratik dan referendum Timor Timur yang menentukan kemerdekaan Timor Leste.', description:'Transisi politik menuju demokrasi modern berlangsung melalui pemilu dan penyelesaian konflik internasional mengenai Timor Leste.', tags:['Demokrasi','Pemilu'], sources:['Sejarah Pemilu 1999','Laporan Referendum']},
+    {id:'i045', date:'2001', title:'Desentralisasi & Otonomi Daerah (UU 1999–2004 fase implementasi)', summary:'Reformasi membuka jalan untuk desentralisasi besar – otonomi daerah diperkuat.', description:'Perubahan ini memindahkan banyak wewenang dari pusat ke daerah, mengubah tata kelola pemerintahan lokal dan pembangunan.', tags:['Reformasi','Pemerintahan'], sources:['Dokumen UU Otonomi','Analisis Kebijakan']},
+    {id:'i046', date:'2002-10-12', title:'Bali Bombings (2002) — dampak terorisme', summary:'Serangan teror besar di Bali yang menewaskan banyak warga dan turis.', description:'Serangan ini memengaruhi kebijakan keamanan nasional, pariwisata, dan kerja sama internasional dalam menanggulangi terorisme.', tags:['Keamanan','Terorisme'], sources:['Laporan Kejadian Bali 2002','Analisis Keamanan']},
+    {id:'i047', date:'2004-12-26', title:'Tsunami Samudera Hindia & dampaknya pada Aceh (2004)', summary:'Gempa dan tsunami dahsyat yang menghantam Aceh dan wilayah lain, menewaskan ratusan ribu.', description:'Bencana ini menimbulkan krisis kemanusiaan besar, dan akhirnya mendukung proses perdamaian di Aceh (Helsinki 2005).', tags:['Bencana','Aceh'], sources:['Laporan Bencana 2004','Penelitian Kemanusiaan']},
+    {id:'i048', date:'2005-08-15', title:'Perjanjian Helsinki (2005) — Akhir konflik Aceh', summary:'Perjanjian damai antara Gerakan Aceh Merdeka (GAM) dan pemerintah Indonesia.', description:'Perjanjian ini membawa gencatan senjata dan rekonsiliasi politik di Aceh, termasuk otonomi khusus dan rehabilitasi pasca-bencana.', tags:['Aceh','Perdamaian'], sources:['Perjanjian Helsinki 2005','Dokumen Pemerintah']},
+    {id:'i049', date:'2009', title:'Pemilu & konsolidasi demokrasi', summary:'Pemilu yang menandai konsolidasi partisipasi politik pasca-Reformasi.', description:'Pemilu tahun 2009 menunjukkan perkembangan sistem politik multipartai dan peran lembaga demokrasi dalam pemilihan pejabat publik.', tags:['Demokrasi','Pemilu'], sources:['Laporan Pemilu 2009','Analisis Politik']},
+    {id:'i050', date:'2014', title:'Joko Widodo (Jokowi) terpilih sebagai Presiden (2014)', summary:'Pemimpin baru dengan fokus infrastruktur dan pemerintahan terdesentralisasi.', description:'Kepemimpinan Jokowi menekankan pembangunan infrastruktur besar, reformasi birokrasi, dan program kesejahteraan sosial untuk pertumbuhan inklusif.', tags:['Politik','Pemerintahan'], sources:['Berita Politik 2014','Analisis Kebijakan']},
+    {id:'i051', date:'2016', title:'Pembangunan infrastruktur besar-besaran & proyek tol laut', summary:'Pemerintahan fokus pada pembangunan konektivitas nasional.', description:'Proyek infrastruktur bertujuan memperkuat konektivitas antar-pulau, meningkatkan ekonomi lokal, dan mendukung pertumbuhan ekonomi skala nasional.', tags:['Pembangunan','Ekonomi'], sources:['Laporan Pembangunan','Analisis Infrastruktur']},
+    {id:'i052', date:'2018', title:'Isu lingkungan & konflik lahan', summary:'Sengketa lahan, deforestasi, dan kebijakan lingkungan menjadi isu penting nasional.', description:'Perdebatan publik dan kebijakan mengenai kehutanan, kelapa sawit, serta perlindungan ekosistem menjadi perhatian utama di tingkat nasional dan internasional.', tags:['Lingkungan','Sosial'], sources:['Laporan Lingkungan','Penelitian Ekologi']},
+    {id:'i053', date:'2019', title:'Pemilihan Presiden 2019 — Jokowi terpilih lagi', summary:'Pemilu presiden yang intens dan polarisasi politik.', description:'Pemilu ini menegaskan dinamika politik Indonesia modern termasuk polarisasi isu dan peran media sosial dalam kampanye.', tags:['Politik','Pemilu'], sources:['Laporan Pemilu 2019','Analisis Politik']},
+    {id:'i054', date:'2020-2022', title:'Pandemi COVID-19 dan tanggapan nasional', summary:'Wabah global memengaruhi kesehatan, ekonomi, dan sosial Indonesia.', description:'Respon pemerintah termasuk kebijakan pembatasan, program vaksinasi massal, dan upaya pemulihan ekonomi; pandemi memengaruhi hampir seluruh aspek kehidupan masyarakat.', tags:['Kesehatan','Modern'], sources:['Laporan Kesehatan Nasional','WHO (nama sumber, tanpa hyperlink)']},
+    {id:'i055', date:'2022', title:'Isu transisi energi & kebijakan ekonomi pasca-pandemi', summary:'Perdebatan kebijakan mengenai energi, pemulihan ekonomi dan stabilitas harga.', description:'Pemerintah dan pelaku ekonomi fokus pada pemulihan, transformasi energi, serta menjaga stabilitas inflasi dan pertumbuhan pasca-pandemi.', tags:['Ekonomi','Energi'], sources:['Laporan Ekonomi Nasional','Analisis Kebijakan']},
+    {id:'i056', date:'2022', title:'Pemindahan Ibu Kota Negara (proyek terus berjalan)', summary:'Rencana pemindahan ibu kota administrasi pemerintahan ke Kalimantan Timur (Proyek IKN).', description:'Proyek ini bertujuan meratakan pembangunan nasional; implementasi dan dampaknya menjadi perdebatan politik, ekonomi, dan lingkungan.', tags:['Pemerintahan','Proyek'], sources:['Dokumen Proyek IKN','Analisis Kebijakan']},
+    {id:'i057', date:'1901-1945', title:'Perkembangan kebudayaan & pers lokal', summary:'Pertumbuhan media, sastra, dan kebangkitan identitas nasional melalui karya-karya sastra.', description:'Sastrawan dan pers pribumi memainkan peranan penting dalam membentuk kesadaran nasional dan penyebaran ide-ide anti-kolonial.', tags:['Budaya','Media'], sources:['Sejarah Sastra Indonesia','Arsip Pers']},
+    {id:'i058', date:'1926-1927', title:'Pemberontakan PKI 1926–1927', summary:'Upaya pemberontakan komunis yang dapat dipadamkan oleh pemerintah kolonial.', description:'Gerakan ini menandai konflik ideologi awal dalam kancah politik kolonial dan berdampak pada dinamika politik pra-kemerdekaan.', tags:['Politik','Pemberontakan'], sources:['Studi Sejarah Politik','Arsip Kolonial']},
+    {id:'i059', date:'1948-1949', title:'Agresi Militer Belanda II & Perjanjian Renville', summary:'Konflik militer Belanda dan perundingan internasional selama Revolusi Nasional.', description:'Serangkaian operasi militer Belanda mendorong diplomasi internasional dan tekanan untuk penyelesaian politik akhir yang mengarah pada pengakuan kedaulatan Indonesia.', tags:['Perang','Diplomasi'], sources:['Sejarah Revolusi Indonesia','Dokumen Negosiasi']},
+    {id:'i060', date:'1950-1960', title:'Masa demokrasi awal & pembangunan politik pascakolonial', summary:'Penataan kehidupan politik, ekonomi, dan budaya sebagai negara baru.', description:'Dekade awal negara merdeka diwarnai pembentukan lembaga-lembaga negara, dinamika partai politik, dan pembangunan infrastruktur dasar.', tags:['Negara','Pembangunan'], sources:['Sejarah Politik Indonesia','Dokumen Resmi']},
+    {id:'i061', date:'1963-1966', title:'Konfrontasi Indonesia–Malaysia (Konfrontasi)', summary:'Konflik diplomatik & militer dengan Malaysia pada awal 1960-an.', description:'Konfrontasi merupakan bagian dari kebijakan luar negeri Soekarno yang menentang pembentukan negara Malaysia; konflik mereda seiring perubahan politik domestik di Indonesia.', tags:['Luar Negeri','Konflik'], sources:['Sejarah Konfrontasi','Dokumen Diplomatik']},
+    {id:'i062', date:'1974', title:'Peristiwa Malari (Malapetaka Limabelas Januari)', summary:'Kerusuhan massa dan protes antikolonialisme baru di Jakarta.', description:'Kerusuhan ini mencerminkan ketidakpuasan terhadap korupsi, pengaruh asing, dan kebijakan ekonomi tertentu pada masa Orde Baru.', tags:['Sosial','Protes'], sources:['Analisis Malari','Studi Sejarah']},
+    {id:'i063', date:'1998-05', title:'Kerusuhan Mei 1998 & pengunduran diri Soeharto', summary:'Gelombang protes dan kerusuhan yang memicu akhir Orde Baru.', description:'Peristiwa ini menandai puncak ketegangan ekonomi dan politik; pengunduran diri Soeharto membuka era Reformasi dan perubahan sistem politik.', tags:['Reformasi','Krisis'], sources:['Catatan Reformasi','Arsip Nasional']},
+    {id:'i064', date:'2000', title:'Otonomi daerah & pemekaran wilayah', summary:'Pelaksanaan otonomi daerah yang memperluas wewenang pemerintah daerah.', description:'Reformasi institusional membawa perubahan pada struktur pemerintahan dan tata kelola lokal, serta menyelaraskan pembangunan dengan kebutuhan daerah masing-masing.', tags:['Desentralisasi','Pemerintahan'], sources:['Dokumen Otonomi Daerah','Analisis Kebijakan']},
+    {id:'i065', date:'2001', title:'Pengadilan Keadilan transisional (beberapa kasus pelanggaran HAM)', summary:'Upaya pengadilan dan rekonsiliasi untuk menyelesaikan kasus-kasus masa lalu.', description:'Proses hukum dan perdebatan tentang akuntabilitas pelanggaran HAM masa lalu menjadi isu penting dalam pembangunan hukum dan penegakan HAM di Indonesia.', tags:['Hukum','HAM'], sources:['Laporan HAM','Penelitian Hukum']},
+    {id:'i066', date:'2003', title:'Pemekaran daerah & Otonomi Khusus', summary:'Beberapa wilayah mendapatkan status khusus serta pemekaran administratif.', description:'Kebijakan pemekaran dimaksudkan untuk pengelolaan yang lebih dekat dengan masyarakat lokal, namun juga memicu debat tentang efisiensi dan desentralisasi.', tags:['Pemerintahan','Desentralisasi'], sources:['Dokumen Pemerintah','Analisis Kebijakan']},
+    {id:'i067', date:'2004', title:'UU Pilkada & perubahan sistem pemilihan kepala daerah (berbagai putaran)', summary:'Perubahan proses pemilihan daerah menuju sistem yang lebih demokratis.', description:'Reformasi politik meliputi perubahan teknik pemilihan kepala daerah, perkuatan partisipasi lokal, dan upaya pengendalian korupsi pada tingkat lokal.', tags:['Demokrasi','Pemilu'], sources:['Dokumen Legislasi','Analisis Politik']},
+    {id:'i068', date:'2007', title:'Kebijakan pembangunan infrastruktur nasional awal 2000-an', summary:'Fokus pada peningkatan konektivitas dan fasilitas publik.', description:'Program infrastruktur diarahkan untuk meningkatkan akses dan pertumbuhan ekonomi regional, termasuk jalan, pelabuhan, dan bandara di berbagai provinsi.', tags:['Pembangunan','Infrastruktur'], sources:['Laporan Pemerintah','Analisis Ekonomi']},
+    {id:'i069', date:'2010', title:'Gerakan anti-korupsi & KPK (penguatan lembaga pemberantasan korupsi)', summary:'KPK menjadi aktor kunci dalam pemberantasan korupsi.', description:'Upaya hukum dan kebijakan untuk mengurangi korupsi mendapat tempat utama dalam agenda reformasi; KPK memainkan peran sentral meskipun menghadapi tantangan politik.', tags:['Hukum','Korupsi'], sources:['Laporan KPK','Penelitian Antikorupsi']},
+    {id:'i070', date:'2013', title:'Isu Sumber Daya Alam & konflik agraria', summary:'Ketegangan antara proyek pembangunan, investasi dan hak-hak masyarakat adat.', description:'Konflik sering muncul akibat konflik kepentingan antara perusahaan, pemerintah, dan masyarakat lokal mengenai pengelolaan lahan dan sumber daya.', tags:['Sosial','Lingkungan'], sources:['Penelitian Agraria','Laporan Kebijakan']},
+    {id:'i071', date:'2015', title:'Penanganan bencana alam & kebijakan mitigasi', summary:'Perbaikan sistem tanggap darurat setelah beberapa bencana besar.', description:'Penguatan kebijakan mitigasi dan respons bencana menjadi prioritas nasional setelah rangkaian bencana dan evaluasi kapasitas penanggulangan.', tags:['Bencana','Kebijakan'], sources:['Laporan BNPB','Studi Mitigasi']},
+    {id:'i072', date:'2016', title:'Reformasi birokrasi & pelayanan publik', summary:'Upaya modernisasi administrasi negara.', description:'Program untuk meningkatkan efisiensi birokrasi, pelayanan publik, dan digitalisasi layanan pemerintah berkembang sebagai bagian dari agenda reformasi berkelanjutan.', tags:['Pemerintahan','Reformasi'], sources:['Laporan Kebijakan','Analisis Publik']},
+    {id:'i073', date:'2018', title:'Isu identitas & kebhinekaan', summary:'Perdebatan tentang pluralitas dan tantangan sosial di era digital.', description:'Tantangan kebinekaan muncul dalam bentuk polarisasi politik, isu identitas agama, dan dinamika sosial yang dipengaruhi media sosial.', tags:['Sosial','Budaya'], sources:['Studi Sosial','Analisis Media']},
+    {id:'i074', date:'2019', title:'Kebijakan ekonomi & reformasi struktural', summary:'Upaya menarik investasi dan memperbaiki iklim usaha.', description:'Pemerintah menerapkan paket-paket kebijakan untuk menyederhanakan regulasi, mendorong investasi asing, dan memperkuat daya saing ekonomi nasional.', tags:['Ekonomi','Kebijakan'], sources:['Laporan Ekonomi','Analisis Kebijakan']},
+    {id:'i075', date:'2020', title:'Pandemi COVID-19 — pengaruh besar pada kehidupan dan ekonomi', summary:'Sejarah modern tercatat dampak pandemi yang luas.', description:'Indonesia menghadapi tantangan kesehatan, ekonomi, dan sosial; kebijakan kesehatan masyarakat, bantuan sosial, dan program vaksinasi menjadi fokus utama pemerintah.', tags:['Kesehatan','Modern'], sources:['Laporan Kementerian Kesehatan','Dokumen Kebijakan']},
+    {id:'i076', date:'2021', title:'Pemulihan ekonomi & transformasi digital', summary:'Akselerasi transformasi digital di berbagai sektor ekonomi.', description:'Pandemi memicu percepatan digitalisasi sektor pemerintahan, perdagangan, dan layanan, serta perubahan perilaku konsumen.', tags:['Teknologi','Ekonomi'], sources:['Laporan Transformasi Digital','Analisis Bisnis']},
+    {id:'i077', date:'2022', title:'Polemik Ibu Kota & IKN', summary:'Diskusi tentang pemindahan ibu kota administrasi negara ke Kalimantan Timur.', description:'Proyek IKN (Ibu Kota Negara baru) memicu perdebatan soal perencanaan, lingkungan, dan keadilan pembangunan antarwilayah.', tags:['Pemerintahan','Pembangunan'], sources:['Dokumen Proyek IKN','Analisis Kebijakan']},
+    {id:'i078', date:'2023', title:'Perkembangan politik & isu lingkungan kontemporer', summary:'Isu-isu kontemporer mencakup politik, lingkungan, dan ekonomi pasca-pandemi.', description:'Diskursus publik di Indonesia memasuki fase baru dengan fokus pada transisi energi, investasi infrastruktur, dan reformasi kelembagaan.', tags:['Kontemporer','Lingkungan'], sources:['Laporan Kebijakan','Media Nasional']},
+    {id:'i079', date:'13th century', title:'Perkembangan budaya lokal & sastra Jawa Kuno', summary:'Pembentukan karya sastra seperti Kakawin dan Prasasti yang merekam peristiwa politik dan budaya.', description:'Karya-karya sastra klasik dari Jawa dan Bali seperti Kakawin dan prasasti-prasasti raja menjadi sumber utama pengetahuan tentang struktur politik dan kebudayaan klasik Nusantara.', tags:['Budaya','Sastra'], sources:['Sastra Jawa Kuno','Studi Bahasa']},
+    {id:'i080', date:'Majapahit era', title:'Perkembangan hukum adat & adat istiadat', summary:'Sistem hukum dan tata adat berkembang seiring kerajaan-kerajaan klasik.', description:'Hukum adat dan aturan sosial di berbagai komunitas Nusantara berfungsi mengatur kehidupan sehari-hari serta hubungan agraria dan kekuasaan politik.', tags:['Hukum','Budaya'], sources:['Studi Hukum Adat','Babad Lokal']}
+  ];
 
-                // Validasi Username
-                if (usernameInput.value.trim() === '') {
-                    showError(usernameError, 'Nama pengguna tidak boleh kosong.');
-                    isValid = false;
-                } else {
-                    hideError(usernameError);
-                }
+  // ---------- Application logic (UI interactions) ----------
+  let index = 0;
+  let eventsSorted = [...events].sort((a,b)=> parseDate(a.date) - parseDate(b.date));
+  let bookmarks = new Set(JSON.parse(localStorage.getItem('tl_bookmarks')||'[]'));
+  const tocList = document.getElementById('tocList'); const page = document.getElementById('page'); const pageContent = document.getElementById('pageContent'); const pageMeta = document.getElementById('pageMeta'); const pageSources = document.getElementById('pageSources'); const positionLabel = document.getElementById('positionLabel'); const progressBar = document.getElementById('progressBar'); const bookmarkCount = document.getElementById('bookmarkCount'); const themeLabel = document.getElementById('themeLabel');
 
-                // Validasi Password
-                if (passwordInput.value.trim() === '') {
-                    showError(passwordError, 'Kata sandi tidak boleh kosong.');
-                    isValid = false;
-                } else if (passwordInput.value.length < 8) {
-                    showError(passwordError, 'Kata sandi minimal 8 karakter.');
-                    isValid = false;
-                } else {
-                    hideError(passwordError);
-                }
+  function parseDate(d){ if(!d) return 0; if(String(d).startsWith('-')) return -parseInt(String(d).replace(/[^0-9]/g,''),10); const num = Number(d); if(!isNaN(num) && String(d).length===4) return new Date(d+'-01-01').getTime(); try{ const t = Date.parse(d); return isNaN(t)?0:t; }catch(e){ return 0; } }
+  function formatDate(d){ return d || 'Tanggal tidak pasti'; }
 
-                // Jika semua input valid
-                if (isValid) {
-                    // Simulasi proses login
-                    loginButton.textContent = 'Memverifikasi...';
-                    loginButton.disabled = true;
+  function renderTOC(list){ tocList.innerHTML = ''; list.forEach((e,i)=>{
+    const item = document.createElement('div'); item.className='toc-item'; item.dataset.index = i; item.tabIndex=0; item.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center"><div><strong>${e.title}</strong><div class='muted' style='font-size:12px'>${e.date}</div></div><div style='text-align:right'><div class='muted' style='font-size:12px'>${e.tags.slice(0,2).join(', ')}</div></div></div>`;
+    if(bookmarks.has(e.id)) item.style.border = '1px dashed var(--accent-2)';
+    item.addEventListener('click', ()=>{ openByIndex(i); });
+    item.addEventListener('keypress', (ev)=>{ if(ev.key==='Enter') openByIndex(i); });
+    tocList.appendChild(item);
+  }); updatePosition(); }
 
-                    setTimeout(() => {
-                        // Ganti ini dengan logika login sesungguhnya (misal: API call)
-                        alert(`Login berhasil! Selamat datang, ${usernameInput.value}!`);
-                        
-                        // Kembalikan tombol ke keadaan semula
-                        loginButton.textContent = 'Masuk';
-                        loginButton.disabled = false;
-                        loginForm.reset(); // Mengosongkan form
-                    }, 1500); // Delay 1.5 detik untuk simulasi
-                }
-            });
+  function updatePosition(){ positionLabel.textContent = (index+1) + ' / ' + eventsSorted.length; progressBar.style.width = ((index+1)/eventsSorted.length*100) + '%'; bookmarkCount.textContent = bookmarks.size; }
 
-            // Menambahkan interaktivitas: sembunyikan error saat pengguna mulai mengetik
-            usernameInput.addEventListener('input', () => hideError(usernameError));
-            passwordInput.addEventListener('input', () => hideError(passwordError));
-        });
-    </script>
-    </body>
+  function openByIndex(i){ if(i<0 || i>=eventsSorted.length) return; index = i; const e = eventsSorted[index]; renderPage(e); highlightTOC(); updatePosition(); }
+
+  function renderPage(e){ pageMeta.textContent = `${e.title} — ${formatDate(e.date)}`; let html = `<div>${e.description}</div>`; pageContent.innerHTML = `<h2 style='margin-top:0'>${e.title}</h2><div class='muted' style='margin-bottom:10px'>${e.summary}</div>` + html; pageSources.innerHTML = '<strong>Sumber:</strong><br>' + e.sources.map(s=>`${s}`).join('<br>'); window.scrollTo({top:0,behavior:'smooth'}); }
+
+  function highlightTOC(){ Array.from(tocList.children).forEach((n,idx)=>{ n.classList.toggle('active', idx===index); }); }
+
+  document.getElementById('prevBtn').addEventListener('click', ()=>{ if(index>0) openByIndex(index-1); });
+  document.getElementById('nextBtn').addEventListener('click', ()=>{ if(index < eventsSorted.length-1) openByIndex(index+1); });
+
+  document.getElementById('btnSearch').addEventListener('click', ()=>{ const q = document.getElementById('searchBox').value.trim().toLowerCase(); if(!q){ eventsSorted = [...events].sort((a,b)=> parseDate(a.date) - parseDate(b.date)); renderTOC(eventsSorted); return; } eventsSorted = events.filter(e=> (e.title + ' ' + e.summary + ' ' + e.description + ' ' + e.tags.join(' ')).toLowerCase().includes(q)).sort((a,b)=> parseDate(a.date)-parseDate(b.date)); renderTOC(eventsSorted); if(eventsSorted.length>0) openByIndex(0); else { pageContent.innerHTML = '<div class="muted">Tidak ditemukan entri yang cocok.</div>'; pageMeta.textContent=''; pageSources.innerHTML=''; } });
+
+  document.getElementById('btnAll').addEventListener('click', ()=>{ eventsSorted = [...events].sort((a,b)=> parseDate(a.date) - parseDate(b.date)); renderTOC(eventsSorted); if(eventsSorted.length>0) openByIndex(0); });
+
+  document.getElementById('btnBookmarks').addEventListener('click', ()=>{ const list = events.filter(e=> bookmarks.has(e.id)); if(list.length===0) { alert('Tidak ada bookmark.'); return; } eventsSorted = list.sort((a,b)=> parseDate(a.date)-parseDate(b.date)); renderTOC(eventsSorted); openByIndex(0); });
+
+  page.addEventListener('dblclick', ()=>{ const e = eventsSorted[index]; if(!e) return; if(bookmarks.has(e.id)) { bookmarks.delete(e.id);} else { bookmarks.add(e.id); } localStorage.setItem('tl_bookmarks', JSON.stringify(Array.from(bookmarks))); renderTOC(eventsSorted); updatePosition(); });
+
+  document.getElementById('themeToggle').addEventListener('click', ()=>{ const el = document.body; const cur = el.getAttribute('data-theme'); if(cur==='dark'){ el.setAttribute('data-theme','light'); themeLabel.textContent='Light'; } else { el.setAttribute('data-theme','dark'); themeLabel.textContent='Dark'; } });
+  document.getElementById('fontIncrease').addEventListener('click', ()=>{ const c = pageContent; const fs = parseFloat(getComputedStyle(c).fontSize); c.style.fontSize = (fs + 2) + 'px'; });
+  document.getElementById('fontDecrease').addEventListener('click', ()=>{ const c = pageContent; const fs = parseFloat(getComputedStyle(c).fontSize); c.style.fontSize = Math.max(14, fs - 2) + 'px'; });
+
+  document.getElementById('exportJSON').addEventListener('click', ()=>{ const blob = new Blob([JSON.stringify(events,null,2)],{type:'application/json'}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=url; a.download='sejarah-indonesia.json'; a.click(); URL.revokeObjectURL(url); });
+  document.getElementById('exportPDF').addEventListener('click', ()=>{ window.print(); });
+
+  window.addEventListener('keydown', (e)=>{ if(e.key==='ArrowRight') { if(index < eventsSorted.length-1) openByIndex(index+1); } else if(e.key==='ArrowLeft') { if(index>0) openByIndex(index-1); } else if(e.key==='f' && (e.ctrlKey||e.metaKey)){ e.preventDefault(); document.getElementById('searchBox').focus(); } });
+
+  renderTOC(eventsSorted); if(eventsSorted.length>0) openByIndex(0); updatePosition();
+  window._SEJARAH_INDONESIA = { events, eventsSorted, bookmarks };
+  </script></body>
 </html>
