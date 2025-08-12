@@ -1,1 +1,282 @@
-hello world
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laman Login Interaktif - Versi Lengkap</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <style>
+        /* Reset & Pengaturan Dasar */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            height: 100vh;
+            overflow: hidden; /* Mencegah scroll */
+        }
+
+        /* Latar Belakang Gradasi */
+        .background-container {
+            height: 100%;
+            width: 100%;
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Kontainer Login dengan Efek Kaca */
+        .login-container {
+            width: 400px;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            color: #e0e0e0;
+            text-align: center;
+        }
+
+        h1 {
+            font-weight: 600;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            color: #ffffff;
+        }
+
+        .subtitle {
+            font-weight: 300;
+            margin-bottom: 30px;
+            color: #a0a0a0;
+        }
+
+        /* Grup Input dengan Ikon */
+        .input-group {
+            position: relative;
+            margin-bottom: 5px; /* Dikecilkan untuk pesan error */
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            border: 1px solid transparent;
+            transition: border 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-group:focus-within {
+            border: 1px solid #00c6ff; /* Warna aksen saat aktif */
+        }
+
+        .input-group i {
+            padding: 15px;
+            color: #a0a0a0;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 15px 15px 15px 0;
+            background: none;
+            border: none;
+            outline: none;
+            color: #e0e0e0;
+            font-size: 1em;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .input-group input::placeholder {
+            color: #777;
+        }
+
+        /* Pesan Error */
+        .error-message {
+            text-align: left;
+            color: #ff6b6b;
+            font-size: 0.8em;
+            height: 18px; /* Beri ruang agar layout tidak bergeser */
+            padding-left: 10px;
+            margin-bottom: 10px;
+            visibility: hidden; /* Sembunyikan tapi tetap ambil ruang */
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .error-message.visible {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* Opsi Tambahan */
+        .options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            margin-bottom: 25px;
+            font-size: 0.9em;
+        }
+
+        .options label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            color: #a0a0a0;
+        }
+
+        .options input[type="checkbox"] {
+            margin-right: 8px;
+        }
+
+        .options a {
+            color: #00c6ff; /* Warna aksen */
+            text-decoration: none;
+            transition: text-decoration 0.3s;
+        }
+
+        .options a:hover {
+            text-decoration: underline;
+        }
+
+        /* Tombol Login */
+        button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(90deg, #00c6ff, #0072ff);
+            color: #ffffff;
+            font-size: 1.2em;
+            font-weight: 600;
+            font-family: 'Poppins', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 198, 255, 0.2);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 198, 255, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+            box-shadow: 0 4px 15px rgba(0, 198, 255, 0.2);
+        }
+    </style>
+    </head>
+<body>
+
+    <div class="background-container">
+        <div class="login-container">
+            <form id="loginForm" novalidate>
+                <h1>Selamat Datang</h1>
+                <p class="subtitle">Silakan masuk untuk melanjutkan</p>
+
+                <div class="input-group">
+                    <i class="fa-solid fa-user"></i>
+                    <input type="text" id="username" name="username" placeholder="Nama Pengguna" required>
+                </div>
+                <p class="error-message" id="username-error"></p>
+
+                <div class="input-group">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" id="password" name="password" placeholder="Kata Sandi" required>
+                </div>
+                <p class="error-message" id="password-error"></p>
+
+                <div class="options">
+                    <label>
+                        <input type="checkbox" name="remember"> Ingat Saya
+                    </label>
+                    <a href="#">Lupa Kata Sandi?</a>
+                </div>
+
+                <button type="submit" id="loginButton">Masuk</button>
+            </form>
+        </div>
+    </div>
+    <script>
+        // Menunggu seluruh konten HTML dimuat sebelum menjalankan script
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            // Mengambil elemen-elemen yang dibutuhkan dari DOM
+            const loginForm = document.getElementById('loginForm');
+            const usernameInput = document.getElementById('username');
+            const passwordInput = document.getElementById('password');
+            const usernameError = document.getElementById('username-error');
+            const passwordError = document.getElementById('password-error');
+            const loginButton = document.getElementById('loginButton');
+
+            // Fungsi untuk menampilkan pesan error
+            function showError(errorElement, message) {
+                errorElement.textContent = message;
+                errorElement.classList.add('visible');
+            }
+
+            // Fungsi untuk menyembunyikan pesan error
+            function hideError(errorElement) {
+                errorElement.textContent = '';
+                errorElement.classList.remove('visible');
+            }
+
+            // Menambahkan event listener pada form saat disubmit
+            loginForm.addEventListener('submit', function(event) {
+                // Mencegah form mengirim data secara default (mencegah reload halaman)
+                event.preventDefault();
+
+                // Flag untuk melacak validasi
+                let isValid = true;
+
+                // Validasi Username
+                if (usernameInput.value.trim() === '') {
+                    showError(usernameError, 'Nama pengguna tidak boleh kosong.');
+                    isValid = false;
+                } else {
+                    hideError(usernameError);
+                }
+
+                // Validasi Password
+                if (passwordInput.value.trim() === '') {
+                    showError(passwordError, 'Kata sandi tidak boleh kosong.');
+                    isValid = false;
+                } else if (passwordInput.value.length < 8) {
+                    showError(passwordError, 'Kata sandi minimal 8 karakter.');
+                    isValid = false;
+                } else {
+                    hideError(passwordError);
+                }
+
+                // Jika semua input valid
+                if (isValid) {
+                    // Simulasi proses login
+                    loginButton.textContent = 'Memverifikasi...';
+                    loginButton.disabled = true;
+
+                    setTimeout(() => {
+                        // Ganti ini dengan logika login sesungguhnya (misal: API call)
+                        alert(`Login berhasil! Selamat datang, ${usernameInput.value}!`);
+                        
+                        // Kembalikan tombol ke keadaan semula
+                        loginButton.textContent = 'Masuk';
+                        loginButton.disabled = false;
+                        loginForm.reset(); // Mengosongkan form
+                    }, 1500); // Delay 1.5 detik untuk simulasi
+                }
+            });
+
+            // Menambahkan interaktivitas: sembunyikan error saat pengguna mulai mengetik
+            usernameInput.addEventListener('input', () => hideError(usernameError));
+            passwordInput.addEventListener('input', () => hideError(passwordError));
+        });
+    </script>
+    </body>
+</html>
